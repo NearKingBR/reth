@@ -19,10 +19,11 @@ client.on("message", message => {
   if (message.author.bot) return;
   if (!message.content.startsWith(prefix)) return;
  
-  let command = message.content.toUpperCase();
+let command = message.content.toUpperCase();;
   command = command.slice(prefix.length);
  
-  let args = message.content.toUpperCase();
+  let args = message.content.split(" ").slice(1);
+  //
   //
  
   try {        //aqui voco pode colocar qualquer nome (não esqueça de mudar o nome da pasta para o mesmo)
