@@ -4,6 +4,7 @@ const client = new Discord.Client();
 const fs = require('fs');
 const config = require('./config.json');
 const db = require('quick.db');
+const gg = client.channels.find("name" , "general");
 
 fs.readdir("./events/", (err, files) => {
   if (err) return console.error(err);
@@ -70,5 +71,83 @@ client.on("message", message => {
 
   });
 
+ client.on("guildMemberAdd", function(member){
+   let rules = "412169234492293130";
+  if(member.guild.id !== rules) return;
+
+member.guild.channels.find("name", "geral-rules").send({embed: {
+  author: {
+    name: member.user.username,
+    icon_url: member.user.avatarURL
+  },
+  color: 0x000000,
+  title: "**Entrou no Servidor**",
+  description: ` **:inbox_tray:  | ${member.toString()}, Seja Bem-Vindo**
+   ` ,
+   timestamp: new Date()
+  },  
+  
+  
+  }) 
+member.addRole(member.guild.roles.find("name", "avaliando"))
+});
+
+client.on('guildMemberAdd', guildMember => { // Make sure this is defined correctly.
+  
+        db.fetchObject(`autoRole_${guildMember.guild.id}`).then(i => {
+
+        // Check if no role is given
+        if (!i.text || i.text.toLowerCase() === 'none') return; // Do nothing if no role is found...
+        else { // Run if a role is found...
+
+            try { // Try to add role...
+                guildMember.addRole(guildMember.guild.roles.find('name', i.text))
+            } catch (err) { // If an error is found (the guild supplied an invalid role), run this...
+                console.log("Auto role invalida.") // You can commet this line out if you don't want this error message
+            }
+
+        }
+
+    })
+
+});
+
+
+client.on('guildDelete', guild => {
+  let ID = "413789544702541825";
+  
+    console.log(`O servidor: ${guild.name} Exclui o seu bot *************************** `)
+    const embed = new Discord.RichEmbed()
+    .setColor("BLUE")
+    .setAuthor(guild.name, guild.iconURL)
+    
+    .addField("BAD", `**O servidor: __${guild.name}__ >Excluio o bot __RETH__:** `)
+    .setThumbnail(guild.iconURL)
+    .addField("Dono:",`<@${guild.ownerID}>`,true)
+    .addField("Membros:",`${guild.members.size}`,true)
+    .addField(":smiling_imp:__**Servidores atuais:**__", `\`\`\`js\n${client.guilds.size}\`\`\``)
+.setTimestamp()
+    client.channels.get(ID).send({embed}) 
+    
+});
+client.on('guildCreate', guild => {
+  let ID = "413789544702541825";
+  
+    console.log(`O servidor:${guild.name}  adicionou o seu bot `)
+    const embed = new Discord.RichEmbed()
+    .setAuthor(guild.name, guild.iconURL)
+    
+        .setColor("BLUE")
+        .addField("GOD", `**O servidor: __${guild.name}__ >adicionou o bot __Reth__: ** `)
+        .setThumbnail(guild.iconURL)
+        .addField("Dono:",`<@${guild.ownerID}>`,true)
+        .addField("Membros:",`${guild.members.size}`,true)
+        .addField(":smiling_imp:__**Servidores atuais:**__", `\`\`\`js\n${client.guilds.size}\`\`\``)
+ 
+        .setTimestamp()
+        client.channels.get(ID).send({embed}) 
+        
+    
+});
 // THIS  MUST  BE  THIS  WAY
 client.login(process.env.BOT_TOKEN);
